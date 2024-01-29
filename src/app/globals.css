@@ -1,5 +1,7 @@
 :root {
-  --color-primary-text: #101828
+  --color-primary-text: #101828;
+  --color-secundary-text: rgba(0, 0, 0, 0.54);
+
 }
 
 * {
