@@ -55,7 +55,6 @@
     position: relative;
     padding-left: 2em;
     display: inline-block;
-
 }
 .checkbox label::before {
     cursor: url("../../assets/Cursors.svg"), auto;
@@ -74,15 +73,18 @@
     border: 1px solid #0796D3;
 }
 .checkbox label::after {
-    content: url('../../assets/check.svg'); /* Substitua com o caminho real para a sua imagem */
+    content: url('../../assets/check.svg');
     position: absolute;
-    top: 55%;
-    left: 9%;
-    transform: translate(-50%, -50%);
+    top: 50%;
+    left: 0;
+    transform: translate(0, -50%);
     color: #FFF;
     opacity: 0;
     transition: all 0.2s ease;
+    width: 18px;
+    height: 18px;
 }
+
 .checkbox label:focus::before, .checkbox label:hover::before {
     background: #A0DCF6;
 }
