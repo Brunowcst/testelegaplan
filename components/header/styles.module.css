@@ -25,7 +25,7 @@
 }
 
 .headerDate {
-    color: rgba(0, 0, 0, 0.54);
+    color: var(--color-secundary-text);
     font-size: 15px;
     font-style: normal;
     font-weight: 400;
