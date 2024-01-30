@@ -1,7 +1,7 @@
 'use client'
 import React, {useEffect, useState} from 'react'
 import sytles from './styles.module.css'
-import CardTasks from '../cardtaks'
+import CardTasks from '../cardTasks'
 import Modal from '../modal'
 
 interface Task {
@@ -11,8 +11,9 @@ interface Task {
 }
 
 export default function TasksContainer() {
+  
   const [isOpen, setIsOpen] = useState(false)
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [runningTasks, setRunningTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
 
   const handleCloseModal = () => {
@@ -20,26 +21,49 @@ export default function TasksContainer() {
   }
 
   const handleCheckboxChange = (taskId: number) => {
-    const taskToUpdate = tasks.find((task) => task.id === taskId);
+    const taskToMove = runningTasks.find((task) => task.id === taskId);
+    if (taskToMove) {
+      const updatedTasks = runningTasks.filter((task) => task.id !== taskId);
+      const updatedCompletedTasks = [...completedTasks, { ...taskToMove, checked: true }];
   
-    const updatedTasks = tasks.filter((task) => task.id !== taskId);
-    setTasks(updatedTasks);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+      setRunningTasks(updatedTasks);
+      setCompletedTasks(updatedCompletedTasks);
   
-    if (taskToUpdate) {
-      setCompletedTasks((prevCompletedTasks) => {
-        taskToUpdate.checked = true
-        const updatedCompletedTasks = [...prevCompletedTasks, taskToUpdate];
+      localStorage.setItem('tasks', JSON.stringify(updatedTasks));
+      localStorage.setItem('completedTasks', JSON.stringify(updatedCompletedTasks));
+    } else {
+      const taskToUncheck = completedTasks.find((task) => task.id === taskId);
+      if (taskToUncheck) {
+        const updatedCompletedTasks = completedTasks.filter((task) => task.id !== taskId);
+        const updatedTasks = [...runningTasks, { ...taskToUncheck, checked: false }];
+  
+        setRunningTasks(updatedTasks);
+        setCompletedTasks(updatedCompletedTasks);
+  
+        localStorage.setItem('tasks', JSON.stringify(updatedTasks));
         localStorage.setItem('completedTasks', JSON.stringify(updatedCompletedTasks));
-        return updatedCompletedTasks;
-      });
+      }
     }
+  };
+
+  const deleteTask = (taskId: number) => {
+    setRunningTasks((prevRunningTasks) => {
+      const updatedRunningTasks = prevRunningTasks.filter((task) => task.id !== taskId);
+      localStorage.setItem('tasks', JSON.stringify(updatedRunningTasks));
+      return updatedRunningTasks;
+    });
+  
+    setCompletedTasks((prevCompletedTasks) => {
+      const updatedCompletedTasks = prevCompletedTasks.filter((task) => task.id !== taskId);
+      localStorage.setItem('completedTasks', JSON.stringify(updatedCompletedTasks));
+      return updatedCompletedTasks;
+    });
   };
   
   useEffect(() => {
     const storedTasks = localStorage.getItem('tasks');
     if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
+      setRunningTasks(JSON.parse(storedTasks));
     }
 
     const storedCompletedTasks = localStorage.getItem('completedTasks');
@@ -52,16 +76,28 @@ export default function TasksContainer() {
     <div  className={sytles.mainContainer}>
         <div className={sytles.mainContent}>
           <p className={sytles.tasktoday}>Suas tarefas de hoje</p>
-          {tasks.map((task) => (
-          <CardTasks checked={task.checked} onCheckboxChange={handleCheckboxChange} id={task.id} key={task.id} title={task.title} />
+          {runningTasks.map((task) => (
+          <CardTasks 
+            onDeleteTask={() => deleteTask(task.id)} 
+            checked={task.checked} 
+            onCheckboxChange={handleCheckboxChange} 
+            id={task.id} key={task.id} 
+            title={task.title} />
           ))}
             <p className={sytles.tasktoday}>Tarefas finalizadas</p>
             {completedTasks.map((task) => (
-            <CardTasks checked={task.checked} onCheckboxChange={handleCheckboxChange} id={task.id} key={task.id} title={task.title} />
+            <CardTasks 
+              onDeleteTask={() => deleteTask(task.id)} 
+              checked={task.checked} 
+              onCheckboxChange={handleCheckboxChange} 
+              id={task.id} 
+              key={task.id} 
+              title={task.title} 
+            />
           ))}
         </div>  
         <button className={sytles.button} onClick={() => setIsOpen(true)}>Adicionar nova tarefa</button>
-        <Modal setTaskList={setTasks} textButton='Adicionar' typeModal={1} isOpen={isOpen} onClose={handleCloseModal} />
+        <Modal setTaskList={setRunningTasks} textButton='Adicionar' typeModal={1} isOpen={isOpen} onClose={handleCloseModal} />
     </div>
   )
 }
