@@ -11,7 +11,7 @@ interface Task {
 }
 
 export default function TasksContainer() {
-  
+
   const [isOpen, setIsOpen] = useState(false)
   const [runningTasks, setRunningTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
@@ -76,16 +76,20 @@ export default function TasksContainer() {
     <div  className={sytles.mainContainer}>
         <div className={sytles.mainContent}>
           <p className={sytles.tasktoday}>Suas tarefas de hoje</p>
-          {runningTasks.map((task) => (
+          
+          {runningTasks.length >= 1 ? runningTasks.map((task) => (
           <CardTasks 
             onDeleteTask={() => deleteTask(task.id)} 
             checked={task.checked} 
             onCheckboxChange={handleCheckboxChange} 
             id={task.id} key={task.id} 
             title={task.title} />
-          ))}
+          )) : (
+            <p className={sytles.tasktoday}>---</p>
+          )}
+
             <p className={sytles.tasktoday}>Tarefas finalizadas</p>
-            {completedTasks.map((task) => (
+            {completedTasks.length >= 1 ? completedTasks.map((task) => (
             <CardTasks 
               onDeleteTask={() => deleteTask(task.id)} 
               checked={task.checked} 
@@ -94,7 +98,9 @@ export default function TasksContainer() {
               key={task.id} 
               title={task.title} 
             />
-          ))}
+          )) : (
+            <p className={sytles.tasktoday}>---</p>
+          )}
         </div>  
         <button className={sytles.button} onClick={() => setIsOpen(true)}>Adicionar nova tarefa</button>
         <Modal setTaskList={setRunningTasks} textButton='Adicionar' typeModal={1} isOpen={isOpen} onClose={handleCloseModal} />
