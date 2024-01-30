@@ -44,3 +44,9 @@
     border: none;
     background: linear-gradient(90deg, #0796D3 0%, #53C0F0 68.65%);
 }
+
+@media (max-width: 500px) {
+    .mainContainer {
+        width: 90%;
+    }
+}
