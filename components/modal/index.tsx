@@ -8,6 +8,7 @@ export interface ModalProps {
   textButton: string;
   typeModal : number;
   setTaskList?: (updatedTaskList: any[]) => void;
+  onDeleteTask? : () => void
 }
 
 export interface Task {
@@ -16,7 +17,7 @@ export interface Task {
   checked: boolean
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, textButton, typeModal, setTaskList }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, textButton, typeModal, setTaskList, onDeleteTask }) => {
   if (!isOpen) return null;
 
   const [taskTitle, setTaskTitle] = React.useState<string>('');
@@ -34,6 +35,13 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, textButton, typeModal, s
       localStorage.setItem('tasks', JSON.stringify(updatedTaskList));
 
       setTaskTitle('');
+      onClose();
+    }
+  };
+
+  const handleDeleteTask = () => {
+    if (onDeleteTask) {
+      onDeleteTask();
       onClose();
     }
   };
@@ -65,7 +73,10 @@ const Modal: React.FC<ModalProps> = ({ isOpen, onClose, textButton, typeModal, s
           <button className={styles.closeButton} onClick={onClose}>
             Cancelar
           </button>
-          <button className={typeModal === 1 ? styles.addButton : styles.deleteButton} onClick={handleAddTask}>
+          <button
+              className={typeModal === 1 ? styles.addButton : styles.deleteButton}
+              onClick={typeModal === 1 ? handleAddTask : handleDeleteTask}
+            >
             {textButton}
           </button>
         </div>
