@@ -7,29 +7,30 @@ export interface ModalProps {
   onClose: () => void;
   textButton: string;
   typeModal : number;
+  setTaskList?: (updatedTaskList: any[]) => void;
 }
 
 export interface Task {
   id: number;
   title: string;
+  checked: boolean
 }
 
-const Modal: React.FC<ModalProps> = ({ isOpen, onClose, textButton, typeModal }) => {
+const Modal: React.FC<ModalProps> = ({ isOpen, onClose, textButton, typeModal, setTaskList }) => {
   if (!isOpen) return null;
 
   const [taskTitle, setTaskTitle] = React.useState<string>('');
-  const [taskList, setTaskList] = React.useState<Task[]>([]);
 
   const handleAddTask = () => {
     if (taskTitle.trim() !== '') {
-      const newTask: Task = { id: Date.now(), title: taskTitle };
+      const newTask: Task = { id: Date.now(), title: taskTitle, checked: false };
 
       const storedTasks = localStorage.getItem('tasks');
       const currentTasks = storedTasks ? JSON.parse(storedTasks) : [];
 
       const updatedTaskList = [...currentTasks, newTask];
 
-      setTaskList(updatedTaskList);
+      setTaskList && setTaskList(updatedTaskList);
       localStorage.setItem('tasks', JSON.stringify(updatedTaskList));
 
       setTaskTitle('');

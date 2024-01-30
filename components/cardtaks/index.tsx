@@ -8,18 +8,22 @@ import Modal from '../modal'
 interface Task {
     id: number;
     title: string;
+    checked: boolean
 }
 
-export default function CardTasks({id, title}: Task) {
+interface CardTasksProps extends Task {
+    onCheckboxChange: (taskId: number) => void;
+}
+
+export default function CardTasks({id, title, onCheckboxChange, checked}: CardTasksProps) {
     const [isOpen, setIsOpen] = useState(false)
 
     const handleCloseModal = () => {
       setIsOpen(false)
     }
-    const [isChecked, setIsChecked] = useState(false);
 
     const handleCheckboxChange = () => {
-        setIsChecked(!isChecked);
+        onCheckboxChange(id);
     };
 
   return (
@@ -28,7 +32,7 @@ export default function CardTasks({id, title}: Task) {
             <div className={styles.checkbox}>
                 <input
                     onChange={handleCheckboxChange}
-                    checked={isChecked}
+                    checked={checked}
                     type="checkbox"
                     id={`chk${id}`}
                     className={styles.checkbox}
