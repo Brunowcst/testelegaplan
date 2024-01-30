@@ -13,20 +13,21 @@ interface Task {
 export default function TasksContainer() {
 
   const [isOpen, setIsOpen] = useState(false)
-  const [runningTasks, setRunningTasks] = useState<Task[]>([]);
+  const [currentTasks, setCurrentTasks] = useState<Task[]>([]);
   const [completedTasks, setCompletedTasks] = useState<Task[]>([]);
 
   const handleCloseModal = () => {
     setIsOpen(false)
   }
 
+  //Lógica de marcar ou desmarcar uma tarefa
   const handleCheckboxChange = (taskId: number) => {
-    const taskToMove = runningTasks.find((task) => task.id === taskId);
+    const taskToMove = currentTasks.find((task) => task.id === taskId);
     if (taskToMove) {
-      const updatedTasks = runningTasks.filter((task) => task.id !== taskId);
+      const updatedTasks = currentTasks.filter((task) => task.id !== taskId);
       const updatedCompletedTasks = [...completedTasks, { ...taskToMove, checked: true }];
   
-      setRunningTasks(updatedTasks);
+      setCurrentTasks(updatedTasks);
       setCompletedTasks(updatedCompletedTasks);
   
       localStorage.setItem('tasks', JSON.stringify(updatedTasks));
@@ -35,9 +36,9 @@ export default function TasksContainer() {
       const taskToUncheck = completedTasks.find((task) => task.id === taskId);
       if (taskToUncheck) {
         const updatedCompletedTasks = completedTasks.filter((task) => task.id !== taskId);
-        const updatedTasks = [...runningTasks, { ...taskToUncheck, checked: false }];
+        const updatedTasks = [...currentTasks, { ...taskToUncheck, checked: false }];
   
-        setRunningTasks(updatedTasks);
+        setCurrentTasks(updatedTasks);
         setCompletedTasks(updatedCompletedTasks);
   
         localStorage.setItem('tasks', JSON.stringify(updatedTasks));
@@ -46,11 +47,12 @@ export default function TasksContainer() {
     }
   };
 
+  //Deletar uma tarefa específica
   const deleteTask = (taskId: number) => {
-    setRunningTasks((prevRunningTasks) => {
-      const updatedRunningTasks = prevRunningTasks.filter((task) => task.id !== taskId);
-      localStorage.setItem('tasks', JSON.stringify(updatedRunningTasks));
-      return updatedRunningTasks;
+    setCurrentTasks((prevcurrentTasks) => {
+      const updatedcurrentTasks = prevcurrentTasks.filter((task) => task.id !== taskId);
+      localStorage.setItem('tasks', JSON.stringify(updatedcurrentTasks));
+      return updatedcurrentTasks;
     });
   
     setCompletedTasks((prevCompletedTasks) => {
@@ -60,10 +62,11 @@ export default function TasksContainer() {
     });
   };
   
+  //atualizar a lista de tarefas de acordo com o local storage
   useEffect(() => {
     const storedTasks = localStorage.getItem('tasks');
     if (storedTasks) {
-      setRunningTasks(JSON.parse(storedTasks));
+      setCurrentTasks(JSON.parse(storedTasks));
     }
 
     const storedCompletedTasks = localStorage.getItem('completedTasks');
@@ -77,7 +80,7 @@ export default function TasksContainer() {
         <div className={sytles.mainContent}>
           <p className={sytles.tasktoday}>Suas tarefas de hoje</p>
           
-          {runningTasks.length >= 1 ? runningTasks.map((task) => (
+          {currentTasks.length >= 1 ? currentTasks.map((task) => (
           <CardTasks 
             onDeleteTask={() => deleteTask(task.id)} 
             checked={task.checked} 
@@ -103,7 +106,7 @@ export default function TasksContainer() {
           )}
         </div>  
         <button className={sytles.button} onClick={() => setIsOpen(true)}>Adicionar nova tarefa</button>
-        <Modal setTaskList={setRunningTasks} textButton='Adicionar' typeModal={1} isOpen={isOpen} onClose={handleCloseModal} />
+        <Modal setTaskList={setCurrentTasks} textButton='Adicionar' typeModal={1} isOpen={isOpen} onClose={handleCloseModal} />
     </div>
   )
 }
